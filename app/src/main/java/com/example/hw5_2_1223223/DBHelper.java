@@ -13,10 +13,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE if not exists myDiary ("
-                + "id integer primary key autoincrement,"
-                + "diaryDate char(10),"
-                + "content varchar(500));";
+        String sql = "CREATE TABLE if not exists  myDiary ( diaryDate CHAR(10) PRIMARY KEY, content VARCHAR(500));";
 
         db.execSQL(sql);
     }

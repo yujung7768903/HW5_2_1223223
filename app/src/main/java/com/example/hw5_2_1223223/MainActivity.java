@@ -20,10 +20,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
-    int id = 0;
-    DatePicker date;
-    EditText content;
-    Button saveBtn;
+    DatePicker date; //현재 날짜
+    EditText content; //일기 내용
+    Button saveBtn; //저장 버튼
     String dbDate;
     String dbContent;
     String selectDate;
@@ -31,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     ContentValues dateValue = new ContentValues();
     ContentValues contentValue = new ContentValues();
     private int mYear, mMonth, mDay;
+    SQLiteDatabase db;
+    DBHelper dbHelper;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -47,42 +48,64 @@ public class MainActivity extends AppCompatActivity {
         mMonth = calendar.get(Calendar.MONTH);
         mDay = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DBHelper dbHelper;
-        SQLiteDatabase db;
-        dbHelper = new DBHelper(MainActivity.this, "myDB.db", null, 1);
+        //데이터베이스 초기화
+        dbHelper = new DBHelper(MainActivity.this, "myDB", null, 1);
         db = dbHelper.getWritableDatabase();
         dbHelper.onCreate(db);
+        db.close();
+
+        //앱 실행 후 데이터 불러오기
+        dbContent = readDiary(mYear + "/" + mMonth + "/" + mDay);
+        Log.d("dbContent", "dbContent : " + dbContent);
+        content.setText(dbContent);
 
         date.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                content.setText("");
+                db = dbHelper.getReadableDatabase();
                 mYear = year;
                 mMonth = monthOfYear;
                 mDay = dayOfMonth;
                 selectDate = mYear + "/" + mMonth + "/" + mDay;
-                Log.d("cursor", "select content from myDiary where diaryDate='" + selectDate + "';");
-                Cursor cursor = db.rawQuery("select content from myDiary where diaryDate='" + selectDate + "';", null);
-                while (cursor.moveToNext()){
-                    Log.d("dbContent", "index1 : " + cursor.getString(0));
-                    dbContent = cursor.getString(0);
-                }
+                dbContent = readDiary(selectDate);
                 content.setText(dbContent);
-                cursor.close();
+                Log.d("selectSqp", "select content from myDiary where diaryDate='" + selectDate + "';");
             }
         });
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                db = dbHelper.getWritableDatabase();
                 selectDate = mYear + "/" + mMonth + "/" + mDay;
                 addContent = content.getText().toString();
-                Log.d("dbInsert", "insert into myDiary values(" + id + " , '" + selectDate + "' , '" + addContent + "');");
-                db.execSQL("insert into myDiary (diaryDate, content) values('" + selectDate + "' , '" + addContent + "');");
-                id += 1;
+                Log.d("dbInsert", "insert into myDiary values( '" + selectDate + "' , '" + addContent + "');");
+                db.execSQL("insert into myDiary  values('" + selectDate + "' , '" + addContent + "');");
                 Toast saveToast = Toast.makeText(getApplicationContext(), "저장되었습니다." , Toast.LENGTH_SHORT);
                 saveToast.show();
             }
         });
+
+    }
+
+    String readDiary(String _selectDate) {
+        String diaryStr = "";
+
+        db = dbHelper.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("select * from myDiary where diaryDate = '" + _selectDate + "';", null);
+
+        if (cursor == null) {
+            content.setHint("일기없음");
+            saveBtn.setText("새로저장");
+        }else if (cursor.moveToFirst() == true){
+            diaryStr = cursor.getString(1);
+            saveBtn.setText("수정하기");
+        }
+
+        cursor.close();
+        db.close();
+
+        return diaryStr;
     }
 }
