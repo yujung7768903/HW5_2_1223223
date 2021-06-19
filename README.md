@@ -1,8 +1,9 @@
-# HW5_2_1223223
+# 간단한 일기장 만들기
 > 안드로이드 스튜디오(자바 활용) 공부 - 스마트 모바일 프로그래밍 과제 5        
-> 일기장 만들기      
+> 참고 : 데이터베이스 개론 2판 - 한빛 아카데미   
+> 참고 : https://runtoyourdream.tistory.com/22 (sql문 작성규칙)
 
-### 과제 내용(간단한 일기장 만들기)
+### 과제 내용
 1. 날짜를 선택했을 때 그 날짜의 일기가 없으면 일기를 새로 쓸 수 있다.
 2. 그 날짜의 일기가 있으면 일기 내용을 보여준다.
 
@@ -15,18 +16,24 @@
 <img width="402" alt="과제 5 일기장 실행 화면" src="https://user-images.githubusercontent.com/68562176/122410124-9d9d4e00-cfbe-11eb-82dc-1abc69964ab0.png">
 
 ---------
-#### SQL 문 정리
-* 테이블 생성
-CREATE TABLE 테이블 이름 (
-    속성_이름 데이터_타입 [NOT NULL] [DEFAULT 기본_값]             
-    [PRIMARY KEY (속성_리스트)]        
-    [UNIQUE (속성_리스트)]        
-    [FOREIGN KEY (속성_리스트) REFERENCES 테이블_이름(속성_리스트)]         
-    [ON DELETE 옵션][ON UPDATE 옵션]              
-    [CONSTRAINT 이름] [CHECK(조건)]           
-);
-* 새로운 속성 추가
-ALTER TABLE 테이블_이름 ADD 속성_이름 데이터_타입 [NOT NULL] [DEFAULT 기본_값];  
-* 데이터 삽입
-INSERT INTO 테이블_이름[(속성_리스트)] VALUES (속성값_리스트);
-(속성 리스트를 쓰지 않을 경우 모든 속성의 값이 VALUES에 일대일로 대응되어야 함)
+#### SQL 정리
+* 개념&규칙
+    * **대소문자를 구분하지 않는다.** 하지만 구분해서 적으면 구문 분석시에 시간을 줄일 수 있다.
+    * sql문은 한 라인에 전부 적어도 되고, 줄을 바꿔서 정리해도 된다.
+    * 문장이 끝나면 반드시 세미콜론(;)을 찍는다.
+* SQL문
+    * 테이블 생성           
+    CREATE TABLE 테이블 이름 (
+        속성_이름 데이터_타입 [NOT NULL] [DEFAULT 기본_값]             
+        [PRIMARY KEY (속성_리스트)]        
+        [UNIQUE (속성_리스트)]        
+        [FOREIGN KEY (속성_리스트) REFERENCES 테이블_이름(속성_리스트)]         
+        [ON DELETE 옵션][ON UPDATE 옵션]              
+        [CONSTRAINT 이름] [CHECK(조건)]           
+    );
+    * 새로운 속성 추가           
+    ALTER TABLE 테이블_이름 ADD 속성_이름 데이터_타입 [NOT NULL] [DEFAULT 기본_값];  
+    * 데이터 삽입           
+    INSERT INTO 테이블_이름[(속성_리스트)] VALUES (속성값_리스트);  
+    : 속성 리스트 이름들과 VALUES 속성 값은 순서대로 일대응 대응대고 개수도 같아야 함.     
+    : 속성 리스트를 쓰지 않을 경우 속성 리스트는 모든 속성에 해당한다. 따라서 속성값 리스트에는 모든 속성에 대한 속성값들이 나열되어야 한다.
